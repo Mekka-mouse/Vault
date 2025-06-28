@@ -1,0 +1,3123 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Vehicle Tracking System</title>
+
+    <style>
+
+        * {
+
+            margin: 0;
+
+            padding: 0;
+
+            box-sizing: border-box;
+
+        }
+
+ 
+
+        body {
+
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+            min-height: 100vh;
+
+            color: #333;
+
+        }
+
+ 
+
+        .container {
+
+            max-width: 1200px;
+
+            margin: 0 auto;
+
+            padding: 20px;
+
+        }
+
+ 
+
+        .header {
+
+            text-align: center;
+
+            color: white;
+
+            margin-bottom: 30px;
+
+        }
+
+ 
+
+        .header h1 {
+
+            font-size: 2.5em;
+
+            margin-bottom: 10px;
+
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+
+        }
+
+ 
+
+        .nav-tabs {
+
+            display: flex;
+
+            justify-content: center;
+
+            margin-bottom: 30px;
+
+            flex-wrap: wrap;
+
+            gap: 10px;
+
+        }
+
+ 
+
+        .nav-tab {
+
+            background: rgba(255,255,255,0.2);
+
+            border: none;
+
+            padding: 15px 25px;
+
+            color: white;
+
+            cursor: pointer;
+
+            border-radius: 25px;
+
+            font-size: 16px;
+
+            font-weight: 600;
+
+            transition: all 0.3s ease;
+
+            backdrop-filter: blur(10px);
+
+        }
+
+ 
+
+        .nav-tab:hover {
+
+            background: rgba(255,255,255,0.3);
+
+            transform: translateY(-2px);
+
+        }
+
+ 
+
+        .nav-tab.active {
+
+            background: white;
+
+            color: #667eea;
+
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+
+        }
+
+ 
+
+        .tab-content {
+
+            display: none;
+
+            background: white;
+
+            border-radius: 20px;
+
+            padding: 30px;
+
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+
+            backdrop-filter: blur(10px);
+
+        }
+
+ 
+
+        .tab-content.active {
+
+            display: block;
+
+            animation: fadeIn 0.5s ease-in;
+
+        }
+
+ 
+
+        @keyframes fadeIn {
+
+            from { opacity: 0; transform: translateY(20px); }
+
+            to { opacity: 1; transform: translateY(0); }
+
+        }
+
+ 
+
+        .form-group {
+
+            margin-bottom: 20px;
+
+        }
+
+ 
+
+        .form-group label {
+
+            display: block;
+
+            margin-bottom: 8px;
+
+            font-weight: 600;
+
+            color: #555;
+
+        }
+
+ 
+
+        .form-group input, .form-group select, .form-group textarea {
+
+            width: 100%;
+
+            padding: 12px 15px;
+
+            border: 2px solid #e1e1e1;
+
+            border-radius: 10px;
+
+            font-size: 16px;
+
+            transition: border-color 0.3s ease;
+
+        }
+
+ 
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+
+            outline: none;
+
+            border-color: #667eea;
+
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+
+        }
+
+ 
+
+        .btn {
+
+            background: linear-gradient(45deg, #667eea, #764ba2);
+
+            color: white;
+
+            border: none;
+
+            padding: 12px 25px;
+
+            border-radius: 10px;
+
+            cursor: pointer;
+
+            font-size: 16px;
+
+            font-weight: 600;
+
+            transition: all 0.3s ease;
+
+            margin-right: 10px;
+
+            margin-bottom: 10px;
+
+        }
+
+ 
+
+        .btn:hover {
+
+            transform: translateY(-2px);
+
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+
+        }
+
+ 
+
+        .btn-danger {
+
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+
+        }
+
+ 
+
+        .btn-success {
+
+            background: linear-gradient(45deg, #51cf66, #40c057);
+
+        }
+
+ 
+
+        .vehicle-grid {
+
+            display: grid;
+
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+
+            gap: 20px;
+
+            margin-top: 20px;
+
+        }
+
+ 
+
+        .vehicle-card {
+
+            background: linear-gradient(135deg, #f8f9ff 0%, #e9ecff 100%);
+
+            border-radius: 15px;
+
+            padding: 20px;
+
+            border: 2px solid #e1e1e1;
+
+            transition: all 0.3s ease;
+
+        }
+
+ 
+
+        .vehicle-card:hover {
+
+            transform: translateY(-5px);
+
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+
+            border-color: #667eea;
+
+        }
+
+ 
+
+        .vehicle-card.checked-out {
+
+            border-color: #ff6b6b;
+
+            background: linear-gradient(135deg, #fff0f0 0%, #ffe0e0 100%);
+
+        }
+
+ 
+
+        .vehicle-card.maintenance {
+
+            border-color: #ffa500;
+
+            background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+
+        }
+
+ 
+
+        .vehicle-status {
+
+            display: inline-block;
+
+            padding: 5px 12px;
+
+            border-radius: 20px;
+
+            font-size: 12px;
+
+            font-weight: 600;
+
+            text-transform: uppercase;
+
+            margin-bottom: 10px;
+
+        }
+
+ 
+
+        .status-available {
+
+            background: #e8f5e8;
+
+            color: #2e7d32;
+
+        }
+
+ 
+
+        .status-checked-out {
+
+            background: #ffebee;
+
+            color: #c62828;
+
+        }
+
+ 
+
+        .status-maintenance {
+
+            background: #fff3e0;
+
+            color: #ef6c00;
+
+        }
+
+ 
+
+        .qr-section {
+
+            text-align: center;
+
+            margin: 20px 0;
+
+            padding: 20px;
+
+            background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 100%);
+
+            border-radius: 15px;
+
+            border: 2px dashed #667eea;
+
+        }
+
+ 
+
+        .qr-code {
+
+            margin: 10px;
+
+            padding: 10px;
+
+            background: white;
+
+            border-radius: 10px;
+
+            display: inline-block;
+
+        }
+
+ 
+
+        .report-table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            margin-top: 20px;
+
+            background: white;
+
+            border-radius: 10px;
+
+            overflow: hidden;
+
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+
+        }
+
+ 
+
+        .report-table th, .report-table td {
+
+            padding: 15px;
+
+            text-align: left;
+
+            border-bottom: 1px solid #e1e1e1;
+
+        }
+
+ 
+
+        .report-table th {
+
+            background: linear-gradient(45deg, #667eea, #764ba2);
+
+            color: white;
+
+            font-weight: 600;
+
+        }
+
+ 
+
+        .report-table tr:hover {
+
+            background: #f8f9ff;
+
+        }
+
+ 
+
+        .maintenance-history {
+
+            margin-top: 15px;
+
+            padding: 15px;
+
+            background: #f8f9ff;
+
+            border-radius: 10px;
+
+            border-left: 4px solid #667eea;
+
+        }
+
+ 
+
+        .maintenance-item {
+
+            padding: 10px 0;
+
+            border-bottom: 1px solid #e1e1e1;
+
+        }
+
+ 
+
+        .maintenance-item:last-child {
+
+            border-bottom: none;
+
+        }
+
+ 
+
+        .alert {
+
+            padding: 15px;
+
+            border-radius: 10px;
+
+            margin-bottom: 20px;
+
+            font-weight: 600;
+
+        }
+
+ 
+
+        .alert-success {
+
+            background: #e8f5e8;
+
+            color: #2e7d32;
+
+            border: 1px solid #4caf50;
+
+        }
+
+ 
+
+        .alert-danger {
+
+            background: #ffebee;
+
+            color: #c62828;
+
+            border: 1px solid #f44336;
+
+        }
+
+ 
+
+        @media (max-width: 768px) {
+
+            .container {
+
+                padding: 10px;
+
+            }
+
+           
+
+            .nav-tabs {
+
+                flex-direction: column;
+
+                align-items: center;
+
+            }
+
+           
+
+            .nav-tab {
+
+                width: 200px;
+
+                text-align: center;
+
+            }
+
+           
+
+            .vehicle-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="header">
+
+            <h1>🚗 Vehicle Tracking System</h1>
+
+            <p>ITD Fleet Management</p>
+
+        </div>
+
+ 
+
+        <div class="nav-tabs">
+
+            <button class="nav-tab active" onclick="showTab('dashboard')">Dashboard</button>
+
+            <button class="nav-tab" onclick="showTab('checkout')">Check Out</button>
+
+            <button class="nav-tab" onclick="showTab('return')">Return</button>
+
+            <button class="nav-tab" onclick="showTab('maintenance')">Maintenance</button>
+
+            <button class="nav-tab" onclick="showTab('reports')">Reports</button>
+
+            <button class="nav-tab" onclick="showTab('key-codes')">Keys</button>
+
+        </div>
+
+ 
+
+        <!-- Dashboard Tab -->
+
+        <div id="dashboard" class="tab-content active">
+
+            <h2>Fleet Overview</h2>
+
+            <div id="fleet-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 20px 0;">
+
+                <div style="background: linear-gradient(45deg, #51cf66, #40c057); color: white; padding: 20px; border-radius: 15px; text-align: center;">
+
+                    <h3>Available</h3>
+
+                    <div style="font-size: 2em; font-weight: bold;" id="available-count">0</div>
+
+                </div>
+
+                <div style="background: linear-gradient(45deg, #ff6b6b, #ee5a52); color: white; padding: 20px; border-radius: 15px; text-align: center;">
+
+                    <h3>Checked Out</h3>
+
+                    <div style="font-size: 2em; font-weight: bold;" id="checked-out-count">0</div>
+
+                </div>
+
+                <div style="background: linear-gradient(45deg, #ffa500, #ff8c00); color: white; padding: 20px; border-radius: 15px; text-align: center;">
+
+                    <h3>Maintenance</h3>
+
+                    <div style="font-size: 2em; font-weight: bold;" id="maintenance-count">0</div>
+
+                </div>
+
+            </div>
+
+            <div class="vehicle-grid" id="vehicle-dashboard"></div>
+
+        </div>
+
+ 
+
+        <!-- Check Out Tab -->
+
+        <div id="checkout" class="tab-content">
+
+            <h2>Vehicle Check Out</h2>
+
+            <div id="checkout-alert"></div>
+
+            <form id="checkout-form">
+
+                <div class="form-group">
+
+                    <label for="checkout-vehicle">Select Vehicle:</label>
+
+                    <select id="checkout-vehicle" required>
+
+                        <option value="">-- Select Vehicle --</option>
+
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="driver-name">Name:</label>
+
+                    <input type="text" id="driver-name" required>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="checkout-purpose">Purpose/Destination:</label>
+
+                    <input type="text" id="checkout-purpose" required>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="expected-return">Expected Return Date:</label>
+
+                    <input type="datetime-local" id="expected-return" required>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="mileage-out">Current Mileage:</label>
+
+                    <input type="number" id="mileage-out" required>
+
+                </div>
+
+                <button type="submit" class="btn">Check Out Vehicle</button>
+
+            </form>
+
+        </div>
+
+ 
+
+        <!-- Return Tab -->
+
+        <div id="return" class="tab-content">
+
+            <h2>Vehicle Return</h2>
+
+            <div id="return-alert"></div>
+
+            <form id="return-form">
+
+                <div class="form-group">
+
+                    <label for="return-vehicle">Select Vehicle:</label>
+
+                    <select id="return-vehicle" required>
+
+                        <option value="">-- Select Vehicle --</option>
+
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="return-mileage">Return Mileage:</label>
+
+                    <input type="number" id="return-mileage" required>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="fuel-level">Fuel Level:</label>
+
+                    <select id="fuel-level" required>
+
+                        <option value="">Select fuel level</option>
+
+                        <option value="100">Full</option>
+
+                        <option value="75">3/4</option>
+
+                        <option value="50">1/2</option>
+
+                        <option value="25">1/4</option>
+
+                        <option value="0">Empty</option>
+
+                    </select>                    
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="supplies-needed">Supplies Needed:</label>
+
+                    <select id="supplies-needed" required>
+
+                            <option value="">Select supplies needed</option>
+
+                            <option value="cleaning-wipes">Cleaning Wipes</option>
+
+                            <option value="disinfecting-spray">Disinfecting Spray</option>
+
+                            <option value="gloves">Gloves</option>
+
+                            <option value="masks">Masks</option>
+
+                            <option value="hand-sanitizer">Hand Sanitizer</option>
+
+                            <option value="No-Supplies-Needed">No Supplies Needed</option>
+
+                        </select>
+
+                </div>                          
+
+                <div class="form-group">
+
+                    <label for="condition-notes">Vehicle Condition Notes:</label>
+
+                    <textarea id="condition-notes" rows="4" placeholder="Any issues, damage, or maintenance needs..."></textarea>
+
+                </div>
+
+                <button type="submit" class="btn btn-success">Return Vehicle</button>
+
+            </form>
+
+        </div>
+
+ 
+
+        <!-- Maintenance Tab -->
+
+        <div id="maintenance" class="tab-content">
+
+            <h2>Vehicle Maintenance</h2>
+
+            <div id="maintenance-alert"></div>
+
+           
+
+            <div style="margin-bottom: 30px;">
+
+                <h3>Schedule Maintenance</h3>
+
+                <form id="maintenance-form">
+
+                    <div class="form-group">
+
+                        <label for="maintenance-vehicle">Select Vehicle:</label>
+
+                        <select id="maintenance-vehicle" required>
+
+                            <option value="">-- Select Vehicle --</option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="maintenance-type">Maintenance Type:</label>
+
+                        <select id="maintenance-type" required>
+
+                            <option value="">-- Select Type --</option>
+
+                            <option value="routine">Routine Service</option>
+
+                            <option value="repair">Repair</option>
+
+                            <option value="inspection">Inspection</option>
+
+                            <option value="emergency">Emergency</option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="maintenance-description">Description:</label>
+
+                        <textarea id="maintenance-description" rows="3" required></textarea>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="maintenance-date">Scheduled Date:</label>
+
+                        <input type="date" id="maintenance-date" required>
+
+                    </div>
+
+                    <button type="submit" class="btn">Schedule Maintenance</button>
+
+                </form>
+
+            </div>
+
+ 
+
+            <div>
+
+                <h3>Maintenance History</h3>
+
+                <div id="maintenance-history"></div>
+
+            </div>
+
+        </div>
+
+ 
+
+        <!-- Reports Tab -->
+
+        <div id="reports" class="tab-content">
+
+            <h2>Fleet Reports</h2>
+
+            <div style="margin-bottom: 20px;">
+
+                <h3>Report Generation</h3>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+
+                    <button class="btn" onclick="generateUtilizationReport()">📊 Utilization Report</button>
+
+                    <button class="btn" onclick="generateMaintenanceReport()">🔧 Maintenance Report</button>
+
+                    <button class="btn" onclick="generateEfficiencyReport()">⚡ Efficiency Report</button>
+
+                </div>
+
+               
+
+                <h3>Data Export Options</h3>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px;">
+
+                    <!-- Excel Export Section -->
+
+                    <div style="background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%); padding: 20px; border-radius: 15px; border: 2px solid #4caf50;">
+
+                        <h4 style="color: #2e7d32; margin-bottom: 15px;">📈 Excel Export (.xlsx)</h4>
+
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+
+                            <button class="btn btn-success" onclick="exportToExcel('vehicles')">Vehicles</button>
+
+                            <button class="btn btn-success" onclick="exportToExcel('checkout-history')">Checkout History</button>
+
+                            <button class="btn btn-success" onclick="exportToExcel('maintenance')">Maintenance</button>
+
+                            <button class="btn btn-success" onclick="exportToExcel('utilization')">Utilization Report</button>
+
+                            <button class="btn btn-success" onclick="exportToExcel('complete')" style="font-weight: bold;">Complete Workbook</button>
+
+                        </div>
+
+                    </div>
+
+                   
+
+                    <!-- CSV Export Section -->
+
+                    <div style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); padding: 20px; border-radius: 15px; border: 2px solid #2196f3;">
+
+                        <h4 style="color: #1565c0; margin-bottom: 15px;">📄 CSV Export (.csv)</h4>
+
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+
+                            <button class="btn" onclick="exportToCSV('vehicles')" style="background: linear-gradient(45deg, #2196f3, #1976d2);">Vehicles</button>
+
+                            <button class="btn" onclick="exportToCSV('checkout-history')" style="background: linear-gradient(45deg, #2196f3, #1976d2);">Checkout History</button>
+
+                            <button class="btn" onclick="exportToCSV('maintenance')" style="background: linear-gradient(45deg, #2196f3, #1976d2);">Maintenance</button>
+
+                            <button class="btn" onclick="exportToCSV('utilization')" style="background: linear-gradient(45deg, #2196f3, #1976d2);">Utilization Report</button>
+
+                            <button class="btn" onclick="exportToCSV('complete')" style="background: linear-gradient(45deg, #2196f3, #1976d2); font-weight: bold;">Complete Report</button>
+
+                        </div>
+
+                    </div>
+
+                   
+
+                    <!-- JSON Export Section -->
+
+                    <div style="background: linear-gradient(135deg, #fff3e0 0%, #ffcc02 100%); padding: 20px; border-radius: 15px; border: 2px solid #ff9800;">
+
+                        <h4 style="color: #e65100; margin-bottom: 15px;">💾 JSON Export (.json)</h4>
+
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+
+                            <button class="btn" onclick="exportData()" style="background: linear-gradient(45deg, #ff9800, #f57c00);">Raw Data Export</button>
+
+                            <p style="font-size: 12px; color: #bf360c; margin: 0;">For system backup & data integration</p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+               
+
+                <div style="background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 100%); padding: 15px; border-radius: 10px; border-left: 4px solid #2196f3; margin-bottom: 20px;">
+
+                    <h4 style="color: #1565c0; margin-bottom: 10px;">💡 Export Tips</h4>
+
+                    <ul style="color: #1976d2; margin: 0;">
+
+                        <li><strong>Excel:</strong> Best for detailed analysis, charts, and presentations</li>
+
+                        <li><strong>CSV:</strong> Perfect for importing into other systems or databases</li>
+
+                        <li><strong>JSON:</strong> Ideal for system backups and data integration</li>
+
+                        <li><strong>Complete Reports:</strong> Include all data with summary information</li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+
+            <div id="reports-content">
+
+                <p style="text-align: center; color: #666; font-style: italic;">Select a report type above to generate and view reports, or use the export options to download data.</p>
+
+            </div>
+
+        </div>
+
+ 
+
+        <!-- Keys Tab -->
+
+        <div id="key-codes" class="tab-content">
+
+            <h2>Key Checkout and Return</h2>
+
+            <p></p>
+
+           
+
+            <div class="form-group">
+
+                <label for="key-codes">Select Key:</label>
+
+                <select id="qr-vehicle">
+
+                    <option value="">-- Select Key --</option>
+
+                </select>
+
+            </div>
+
+            <button class="btn" onclick="generateQRCode()">Checkout</button> <button class="btn" onclick="generateQRCode()">Return</button>
+
+           
+
+            <div class="qr-section" id="qr-display" style="display: none;">
+
+                <h3>QR Code Generated</h3>
+
+                <div id="qr-code-container"></div>
+
+                <p>Scan this code to quickly access the vehicle tracking system for this specific vehicle.</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+ 
+
+    <script src=https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js></script>
+
+    <script>
+
+        // Sample data structure - in production, this would connect to a database
+
+        let vehicles = [
+
+            {
+
+                id: '325-Field Services',
+
+                make: 'Dodge',
+
+                model: 'Caravan-FS',
+
+                licensePlate: 'ITD-0001',
+
+                status: 'available',
+
+                mileage: 25430,
+
+                checkedOutBy: null,
+
+                checkedOutDate: null,
+
+                expectedReturn: null,
+
+                maintenanceScheduled: null
+
+            },
+
+            {
+
+                id: '326-Networking',
+
+                make: 'Dodge',
+
+                model: 'Caravan-N',
+
+                licensePlate: 'ITD-002',
+
+                status: 'available',
+
+                mileage: 18920,
+
+                checkedOutBy: null,
+
+                checkedOutDate: null,
+
+                expectedReturn: null,
+
+                maintenanceScheduled: null
+
+            },
+
+            {
+
+                id: '342-Networking',
+
+                make: 'Dodge',
+
+                model: 'Caravan-N',
+
+                licensePlate: 'ITD-003',
+
+                status: 'available',
+
+                mileage: 12920,
+
+                checkedOutBy: null,
+
+                checkedOutDate: null,
+
+                expectedReturn: null,
+
+                maintenanceScheduled: null
+
+            },
+
+            {
+
+                id: '343-Field Services',
+
+                make: 'Chevy',
+
+                model: 'Pacifica-FS',
+
+                licensePlate: 'ITD-004',
+
+                status: 'available',
+
+                mileage: 42100,
+
+                checkedOutBy: null,
+
+                checkedOutDate: null,
+
+                expectedReturn: null,
+
+                maintenanceScheduled: null
+
+            }
+
+        ];
+
+ 
+
+        let checkoutHistory = [];
+
+        let maintenanceHistory = [];
+
+ 
+
+        // Initialize the application
+
+        function init() {
+
+            updateDashboard();
+
+            populateVehicleSelects();
+
+            updateMaintenanceHistory();
+
+        }
+
+ 
+
+        // Tab switching functionality
+
+        function showTab(tabName) {
+
+            // Hide all tabs
+
+            document.querySelectorAll('.tab-content').forEach(tab => {
+
+                tab.classList.remove('active');
+
+            });
+
+           
+
+            // Remove active class from all nav tabs
+
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+
+                tab.classList.remove('active');
+
+            });
+
+           
+
+            // Show selected tab
+
+            document.getElementById(tabName).classList.add('active');
+
+           
+
+            // Add active class to clicked nav tab
+
+            event.target.classList.add('active');
+
+           
+
+            // Update dashboard when switching to it
+
+            if (tabName === 'dashboard') {
+
+                updateDashboard();
+
+            }
+
+        }
+
+ 
+
+        // Update dashboard with current vehicle status
+
+        function updateDashboard() {
+
+            const availableVehicles = vehicles.filter(v => v.status === 'available');
+
+            const checkedOutVehicles = vehicles.filter(v => v.status === 'checked-out');
+
+            const maintenanceVehicles = vehicles.filter(v => v.status === 'maintenance');
+
+ 
+
+            document.getElementById('available-count').textContent = availableVehicles.length;
+
+            document.getElementById('checked-out-count').textContent = checkedOutVehicles.length;
+
+            document.getElementById('maintenance-count').textContent = maintenanceVehicles.length;
+
+ 
+
+            // Update vehicle grid
+
+            const dashboard = document.getElementById('vehicle-dashboard');
+
+            dashboard.innerHTML = '';
+
+ 
+
+            vehicles.forEach(vehicle => {
+
+                const card = createVehicleCard(vehicle);
+
+                dashboard.appendChild(card);
+
+            });
+
+        }
+
+ 
+
+        // Create vehicle card for dashboard
+
+        function createVehicleCard(vehicle) {
+
+            const card = document.createElement('div');
+
+            card.className = `vehicle-card ${vehicle.status.replace('-', '-')}`;
+
+           
+
+            const statusClass = vehicle.status === 'available' ? 'status-available' :
+
+                              vehicle.status === 'checked-out' ? 'status-checked-out' : 'status-maintenance';
+
+           
+
+            card.innerHTML = `
+
+                <div class="vehicle-status ${statusClass}">${vehicle.status.replace('-', ' ')}</div>
+
+                <h3>${vehicle.make} ${vehicle.model}</h3>
+
+                <p><strong>ID:</strong> ${vehicle.id}</p>
+
+                <p><strong>License:</strong> ${vehicle.licensePlate}</p>
+
+                <p><strong>Mileage:</strong> ${vehicle.mileage.toLocaleString()} miles</p>
+
+                ${vehicle.checkedOutBy ? `<p><strong>Checked out by:</strong> ${vehicle.checkedOutBy}</p>` : ''}
+
+                ${vehicle.expectedReturn ? `<p><strong>Expected return:</strong> ${new Date(vehicle.expectedReturn).toLocaleDateString()}</p>` : ''}
+
+            `;
+
+           
+
+            return card;
+
+        }
+
+ 
+
+        // Populate vehicle select dropdowns
+
+        function populateVehicleSelects() {
+
+            const checkoutSelect = document.getElementById('checkout-vehicle');
+
+            const returnSelect = document.getElementById('return-vehicle');
+
+            const maintenanceSelect = document.getElementById('maintenance-vehicle');
+
+            const qrSelect = document.getElementById('qr-vehicle');
+
+ 
+
+            // Clear existing options (except first)
+
+            [checkoutSelect, returnSelect, maintenanceSelect, qrSelect].forEach(select => {
+
+                while (select.children.length > 1) {
+
+                    select.removeChild(select.lastChild);
+
+                }
+
+            });
+
+ 
+
+            vehicles.forEach(vehicle => {
+
+                // Available vehicles for checkout
+
+                if (vehicle.status === 'available') {
+
+                    const option = document.createElement('option');
+
+                    option.value = vehicle.id;
+
+                    option.textContent = `${vehicle.id} -  ${vehicle.make} ${vehicle.model}`;
+
+                    checkoutSelect.appendChild(option);
+
+                }
+
+ 
+
+                // Checked out vehicles for return
+
+                if (vehicle.status === 'checked-out') {
+
+                    const option = document.createElement('option');
+
+                    option.value = vehicle.id;
+
+                    option.textContent = `${vehicle.id} -  ${vehicle.make} ${vehicle.model}`;
+
+                    returnSelect.appendChild(option);
+
+                }
+
+ 
+
+                // All vehicles for maintenance and QR
+
+                [maintenanceSelect, qrSelect].forEach(select => {
+
+                    const option = document.createElement('option');
+
+                    option.value = vehicle.id;
+
+                    option.textContent = `${vehicle.id} -  ${vehicle.make} ${vehicle.model}`;
+
+                    select.appendChild(option);
+
+                });
+
+            });
+
+        }
+
+ 
+
+        // Handle vehicle checkout
+
+        document.getElementById('checkout-form').addEventListener('submit', function(e) {
+
+            e.preventDefault();
+
+           
+
+            const vehicleId = document.getElementById('checkout-vehicle').value;
+
+            const Name = document.getElementById('driver-name').value;
+
+            const purpose = document.getElementById('checkout-purpose').value;
+
+            const expectedReturn = document.getElementById('expected-return').value;
+
+            const mileage = parseInt(document.getElementById('mileage-out').value);
+
+ 
+
+            const vehicle = vehicles.find(v => v.id === vehicleId);
+
+            if (vehicle) {
+
+                vehicle.status = 'checked-out';
+
+                vehicle.checkedOutBy = Name;
+
+                vehicle.checkedOutDate = new Date().toISOString();
+
+                vehicle.expectedReturn = expectedReturn;
+
+                vehicle.mileage = mileage;
+
+ 
+
+                // Add to checkout history
+
+                checkoutHistory.push({
+
+                    vehicleId: vehicleId,
+
+                    Name: Name,
+
+                    purpose: purpose,
+
+                    checkoutDate: new Date().toISOString(),
+
+                    expectedReturn: expectedReturn,
+
+                    mileageOut: mileage
+
+                });
+
+ 
+
+                showAlert('checkout-alert', 'success', 'Vehicle checked out successfully!');
+
+                document.getElementById('checkout-form').reset();
+
+                populateVehicleSelects();
+
+                updateDashboard();
+
+            }
+
+        });
+
+ 
+
+        // Handle vehicle return
+
+        document.getElementById('return-form').addEventListener('submit', function(e) {
+
+            e.preventDefault();
+
+           
+
+            const vehicleId = document.getElementById('return-vehicle').value;
+
+            const returnMileage = parseInt(document.getElementById('return-mileage').value);
+
+            const fuelLevel = parseInt(document.getElementById('fuel-level').value);
+
+            const conditionNotes = document.getElementById('condition-notes').value;
+
+ 
+
+            const vehicle = vehicles.find(v => v.id === vehicleId);
+
+            if (vehicle) {
+
+                const milesDriven = returnMileage - vehicle.mileage;
+
+                vehicle.status = 'available';
+
+                vehicle.mileage = returnMileage;
+
+               
+
+                // Update checkout history
+
+                const checkout = checkoutHistory.find(c => c.vehicleId === vehicleId && !c.returnDate);
+
+                if (checkout) {
+
+                    checkout.returnDate = new Date().toISOString();
+
+                    checkout.mileageIn = returnMileage;
+
+                    checkout.milesDriven = milesDriven;
+
+                    checkout.fuelLevel = fuelLevel;
+
+                    checkout.conditionNotes = conditionNotes;
+
+                }
+
+ 
+
+                // Clear checkout info
+
+                vehicle.checkedOutBy = null;
+
+                vehicle.checkedOutDate = null;
+
+                vehicle.expectedReturn = null;
+
+ 
+
+                showAlert('return-alert', 'success', `Vehicle returned successfully! <br><i> Miles driven: ${milesDriven}</i> <br> 1.Please ensure the charging cables are left inside the vehicle. <br> 2.Remove all personal belongings.<br> 3.Return the vehicle key using the key return.`);
+
+                document.getElementById('return-form').reset();
+
+                populateVehicleSelects();
+
+                updateDashboard();
+
+            }
+
+        });
+
+ 
+
+        // Handle maintenance scheduling
+
+        document.getElementById('maintenance-form').addEventListener('submit', function(e) {
+
+            e.preventDefault();
+
+           
+
+            const vehicleId = document.getElementById('maintenance-vehicle').value;
+
+            const maintenanceType = document.getElementById('maintenance-type').value;
+
+            const description = document.getElementById('maintenance-description').value;
+
+            const scheduledDate = document.getElementById('maintenance-date').value;
+
+ 
+
+            const vehicle = vehicles.find(v => v.id === vehicleId);
+
+            if (vehicle && vehicle.status === 'available') {
+
+                vehicle.status = 'maintenance';
+
+                vehicle.maintenanceScheduled = scheduledDate;
+
+            }
+
+ 
+
+            maintenanceHistory.push({
+
+                vehicleId: vehicleId,
+
+                type: maintenanceType,
+
+                description: description,
+
+                scheduledDate: scheduledDate,
+
+                status: 'scheduled',
+
+                createdDate: new Date().toISOString()
+
+            });
+
+ 
+
+            showAlert('maintenance-alert', 'success', 'Maintenance scheduled successfully!');
+
+            document.getElementById('maintenance-form').reset();
+
+            populateVehicleSelects();
+
+            updateDashboard();
+
+            updateMaintenanceHistory();
+
+        });
+
+ 
+
+        // Update maintenance history display
+
+        function updateMaintenanceHistory() {
+
+            const historyDiv = document.getElementById('maintenance-history');
+
+            historyDiv.innerHTML = '';
+
+ 
+
+            if (maintenanceHistory.length === 0) {
+
+                historyDiv.innerHTML = '<p>No maintenance history available.</p>';
+
+                return;
+
+            }
+
+ 
+
+            maintenanceHistory.forEach(maintenance => {
+
+                const vehicle = vehicles.find(v => v.id === maintenance.vehicleId);
+
+                const maintenanceDiv = document.createElement('div');
+
+                maintenanceDiv.className = 'maintenance-item';
+
+                maintenanceDiv.innerHTML = `
+
+                    <h4>${vehicle ? vehicle.make + ' ' + vehicle.model : 'Unknown Vehicle'} (${maintenance.vehicleId})</h4>
+
+                    <p><strong>Type:</strong> ${maintenance.type}</p>
+
+                    <p><strong>Description:</strong> ${maintenance.description}</p>
+
+                    <p><strong>Scheduled:</strong> ${new Date(maintenance.scheduledDate).toLocaleDateString()}</p>
+
+                    <p><strong>Status:</strong> ${maintenance.status}</p>
+
+                    ${maintenance.status === 'scheduled' ?
+
+                        `<button class="btn btn-success" onclick="completeMaintenance('${maintenance.vehicleId}', '${maintenance.scheduledDate}')">Mark Complete</button>` :
+
+                        ''}
+
+                `;
+
+                historyDiv.appendChild(maintenanceDiv);
+
+            });
+
+        }
+
+ 
+
+        // Complete maintenance
+
+        function completeMaintenance(vehicleId, scheduledDate) {
+
+            const maintenance = maintenanceHistory.find(m => m.vehicleId === vehicleId && m.scheduledDate === scheduledDate);
+
+            const vehicle = vehicles.find(v => v.id === vehicleId);
+
+           
+
+            if (maintenance && vehicle) {
+
+                maintenance.status = 'completed';
+
+                maintenance.completedDate = new Date().toISOString();
+
+                vehicle.status = 'available';
+
+                vehicle.maintenanceScheduled = null;
+
+               
+
+                populateVehicleSelects();
+
+                updateDashboard();
+
+                updateMaintenanceHistory();
+
+            }
+
+        }
+
+ 
+
+        // Generate utilization report
+
+        function generateUtilizationReport() {
+
+            const reportsContent = document.getElementById('reports-content');
+
+           
+
+            let report = '<h3>Vehicle Utilization Report</h3>';
+
+            report += '<table class="report-table">';
+
+            report += '<tr><th>Vehicle</th><th>Total Checkouts</th><th>Total Miles</th><th>Current Status</th></tr>';
+
+           
+
+            vehicles.forEach(vehicle => {
+
+                const vehicleCheckouts = checkoutHistory.filter(c => c.vehicleId === vehicle.id);
+
+                const totalMiles = vehicleCheckouts.reduce((sum, c) => sum + (c.milesDriven || 0), 0);
+
+               
+
+                report += `<tr>
+
+                    <td>${vehicle.id} - ${vehicle.make} ${vehicle.model}</td>
+
+                    <td>${vehicleCheckouts.length}</td>
+
+                    <td>${totalMiles.toLocaleString()}</td>
+
+                    <td>${vehicle.status}</td>
+
+                </tr>`;
+
+            });
+
+           
+
+            report += '</table>';
+
+            reportsContent.innerHTML = report;
+
+        }
+
+ 
+
+        // Generate maintenance report
+
+        function generateMaintenanceReport() {
+
+            const reportsContent = document.getElementById('reports-content');
+
+           
+
+            let report = '<h3>Maintenance Report</h3>';
+
+            report += '<table class="report-table">';
+
+            report += '<tr><th>Vehicle</th><th>Maintenance Type</th><th>Description</th><th>Scheduled Date</th><th>Status</th></tr>';
+
+           
+
+            maintenanceHistory.forEach(maintenance => {
+
+                const vehicle = vehicles.find(v => v.id === maintenance.vehicleId);
+
+                report += `<tr>
+
+                    <td>${maintenance.vehicleId} - ${vehicle ? vehicle.make + ' ' + vehicle.model : 'Unknown'}</td>
+
+                    <td>${maintenance.type}</td>
+
+                    <td>${maintenance.description}</td>
+
+                    <td>${new Date(maintenance.scheduledDate).toLocaleDateString()}</td>
+
+                    <td>${maintenance.status}</td>
+
+                </tr>`;
+
+            });
+
+           
+
+            report += '</table>';
+
+            reportsContent.innerHTML = report;
+
+        }
+
+ 
+
+        // Export data functionality - JSON format
+
+        function exportData() {
+
+            const data = {
+
+                vehicles: vehicles,
+
+                checkoutHistory: checkoutHistory,
+
+                maintenanceHistory: maintenanceHistory,
+
+                exportDate: new Date().toISOString()
+
+            };
+
+           
+
+            const dataStr = JSON.stringify(data, null, 2);
+
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+
+           
+
+            const link = document.createElement('a');
+
+            link.href = URL.createObjectURL(dataBlob);
+
+            link.download = `vehicle_tracking_export_${new Date().toISOString().split('T')[0]}.json`;
+
+            link.click();
+
+        }
+
+ 
+
+        // Export to CSV functionality
+
+        function exportToCSV(dataType) {
+
+            let csvContent = '';
+
+            let filename = '';
+
+            const timestamp = new Date().toISOString().split('T')[0];
+
+ 
+
+            switch(dataType) {
+
+                case 'vehicles':
+
+                    csvContent = generateVehicleCSV();
+
+                    filename = `vehicles_${timestamp}.csv`;
+
+                    break;
+
+                case 'checkout-history':
+
+                    csvContent = generateCheckoutHistoryCSV();
+
+                    filename = `checkout_history_${timestamp}.csv`;
+
+                    break;
+
+                case 'maintenance':
+
+                    csvContent = generateMaintenanceCSV();
+
+                    filename = `maintenance_${timestamp}.csv`;
+
+                    break;
+
+                case 'utilization':
+
+                    csvContent = generateUtilizationCSV();
+
+                    filename = `utilization_report_${timestamp}.csv`;
+
+                    break;
+
+                default:
+
+                    csvContent = generateAllDataCSV();
+
+                    filename = `complete_report_${timestamp}.csv`;
+
+            }
+
+ 
+
+            downloadCSV(csvContent, filename);
+
+        }
+
+ 
+
+        // Generate Vehicle CSV
+
+        function generateVehicleCSV() {
+
+            const headers = ['Vehicle ID', 'Make', 'Model', 'License Plate', 'Current Mileage', 'Status', 'Checked Out By', 'Expected Return'];
+
+            let csv = headers.join(',') + '\n';
+
+ 
+
+            vehicles.forEach(vehicle => {
+
+                const row = [
+
+                    vehicle.id,
+
+                    vehicle.make,
+
+                    vehicle.model,
+
+                    vehicle.licensePlate,
+
+                    vehicle.mileage,
+
+                    vehicle.status,
+
+                    vehicle.checkedOutBy || '',
+
+                    vehicle.expectedReturn ? new Date(vehicle.expectedReturn).toLocaleDateString() : ''
+
+                ];
+
+                csv += row.map(field => `"${field}"`).join(',') + '\n';
+
+            });
+
+ 
+
+            return csv;
+
+        }
+
+ 
+
+        // Generate Checkout History CSV
+
+        function generateCheckoutHistoryCSV() {
+
+            const headers = ['Vehicle ID', 'Name', 'Purpose', 'Checkout Date', 'Expected Return', 'Return Date', 'Mileage Out', 'Mileage In', 'Miles Driven', 'Fuel Level', 'Condition Notes'];
+
+            let csv = headers.join(',') + '\n';
+
+ 
+
+            checkoutHistory.forEach(checkout => {
+
+                const row = [
+
+                    checkout.vehicleId,
+
+                    checkout.Name,
+
+                    checkout.purpose,
+
+                    new Date(checkout.checkoutDate).toLocaleString(),
+
+                    new Date(checkout.expectedReturn).toLocaleString(),
+
+                    checkout.returnDate ? new Date(checkout.returnDate).toLocaleString() : '',
+
+                    checkout.mileageOut || '',
+
+                    checkout.mileageIn || '',
+
+                    checkout.milesDriven || '',
+
+                    checkout.fuelLevel || '',
+
+                    checkout.conditionNotes || ''
+
+                ];
+
+                csv += row.map(field => `"${String(field).replace(/"/g, '""')}"`).join(',') + '\n';
+
+            });
+
+ 
+
+            return csv;
+
+        }
+
+ 
+
+        // Generate Maintenance CSV
+
+        function generateMaintenanceCSV() {
+
+            const headers = ['Vehicle ID', 'Vehicle Info', 'Maintenance Type', 'Description', 'Scheduled Date', 'Status', 'Created Date', 'Completed Date'];
+
+            let csv = headers.join(',') + '\n';
+
+ 
+
+            maintenanceHistory.forEach(maintenance => {
+
+                const vehicle = vehicles.find(v => v.id === maintenance.vehicleId);
+
+                const vehicleInfo = vehicle ? `${vehicle.make} ${vehicle.model}` : 'Unknown';
+
+               
+
+                const row = [
+
+                    maintenance.vehicleId,
+
+                    vehicleInfo,
+
+                    maintenance.type,
+
+                    maintenance.description,
+
+                    new Date(maintenance.scheduledDate).toLocaleDateString(),
+
+                    maintenance.status,
+
+                    new Date(maintenance.createdDate).toLocaleString(),
+
+                    maintenance.completedDate ? new Date(maintenance.completedDate).toLocaleString() : ''
+
+                ];
+
+                csv += row.map(field => `"${String(field).replace(/"/g, '""')}"`).join(',') + '\n';
+
+            });
+
+ 
+
+            return csv;
+
+        }
+
+ 
+
+        // Generate Utilization Report CSV
+
+        function generateUtilizationCSV() {
+
+            const headers = ['Vehicle ID', 'Vehicle Info', 'Total Checkouts', 'Total Miles Driven', 'Average Miles Per Trip', 'Current Mileage', 'Current Status'];
+
+            let csv = headers.join(',') + '\n';
+
+ 
+
+            vehicles.forEach(vehicle => {
+
+                const vehicleCheckouts = checkoutHistory.filter(c => c.vehicleId === vehicle.id);
+
+                const totalMiles = vehicleCheckouts.reduce((sum, c) => sum + (c.milesDriven || 0), 0);
+
+                const avgMiles = vehicleCheckouts.length > 0 ? (totalMiles / vehicleCheckouts.length).toFixed(1) : 0;
+
+               
+
+                const row = [
+
+                    vehicle.id,
+
+                    `${vehicle.make} ${vehicle.model}`,
+
+                    vehicleCheckouts.length,
+
+                    totalMiles,
+
+                    avgMiles,
+
+                    vehicle.mileage,
+
+                    vehicle.status
+
+                ];
+
+                csv += row.map(field => `"${field}"`).join(',') + '\n';
+
+            });
+
+ 
+
+            return csv;
+
+        }
+
+ 
+
+        // Generate Complete Report CSV
+
+        function generateAllDataCSV() {
+
+            let csv = 'VEHICLE TRACKING SYSTEM - COMPLETE REPORT\n';
+
+            csv += `Generated: ${new Date().toLocaleString()}\n\n`;
+
+           
+
+            csv += 'VEHICLES\n';
+
+            csv += generateVehicleCSV() + '\n';
+
+           
+
+            csv += 'CHECKOUT HISTORY\n';
+
+            csv += generateCheckoutHistoryCSV() + '\n';
+
+           
+
+            csv += 'MAINTENANCE HISTORY\n';
+
+            csv += generateMaintenanceCSV() + '\n';
+
+           
+
+            return csv;
+
+        }
+
+ 
+
+        // Download CSV file
+
+        function downloadCSV(csvContent, filename) {
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+            const link = document.createElement('a');
+
+           
+
+            if (link.download !== undefined) {
+
+                const url = URL.createObjectURL(blob);
+
+                link.setAttribute('href', url);
+
+                link.setAttribute('download', filename);
+
+                link.style.visibility = 'hidden';
+
+                document.body.appendChild(link);
+
+                link.click();
+
+                document.body.removeChild(link);
+
+            }
+
+        }
+
+ 
+
+        // Export to Excel functionality
+
+        function exportToExcel(dataType) {
+
+            // Create a new workbook
+
+            const wb = XLSX.utils.book_new();
+
+            const timestamp = new Date().toISOString().split('T')[0];
+
+ 
+
+            switch(dataType) {
+
+                case 'vehicles':
+
+                    addVehicleSheet(wb);
+
+                    XLSX.writeFile(wb, `vehicles_${timestamp}.xlsx`);
+
+                    break;
+
+                case 'checkout-history':
+
+                    addCheckoutHistorySheet(wb);
+
+                    XLSX.writeFile(wb, `checkout_history_${timestamp}.xlsx`);
+
+                    break;
+
+                case 'maintenance':
+
+                    addMaintenanceSheet(wb);
+
+                    XLSX.writeFile(wb, `maintenance_${timestamp}.xlsx`);
+
+                    break;
+
+                case 'utilization':
+
+                    addUtilizationSheet(wb);
+
+                    XLSX.writeFile(wb, `utilization_report_${timestamp}.xlsx`);
+
+                    break;
+
+                default:
+
+                    addAllSheets(wb);
+
+                    XLSX.writeFile(wb, `complete_report_${timestamp}.xlsx`);
+
+            }
+
+        }
+
+ 
+
+        // Add Vehicle sheet to workbook
+
+        function addVehicleSheet(wb) {
+
+            const vehicleData = vehicles.map(vehicle => ({
+
+                'Vehicle ID': vehicle.id,
+
+                'Make': vehicle.make,
+
+                'Model': vehicle.model,
+
+                'License Plate': vehicle.licensePlate,
+
+                'Current Mileage': vehicle.mileage,
+
+                'Status': vehicle.status,
+
+                'Checked Out By': vehicle.checkedOutBy || '',
+
+                'Expected Return': vehicle.expectedReturn ? new Date(vehicle.expectedReturn).toLocaleDateString() : ''
+
+            }));
+
+ 
+
+            const ws = XLSX.utils.json_to_sheet(vehicleData);
+
+           
+
+            // Set column widths
+
+            ws['!cols'] = [
+
+                {wch: 12}, {wch: 15}, {wch: 15}, {wch: 8}, {wch: 15},
+
+                {wch: 15}, {wch: 12}, {wch: 20}, {wch: 15}
+
+            ];
+
+ 
+
+            XLSX.utils.book_append_sheet(wb, ws, 'Vehicles');
+
+        }
+
+ 
+
+        // Add Checkout History sheet to workbook
+
+        function addCheckoutHistorySheet(wb) {
+
+            const checkoutData = checkoutHistory.map(checkout => ({
+
+                'Vehicle ID': checkout.vehicleId,
+
+                'Name': checkout.Name,
+
+                'Purpose': checkout.purpose,
+
+                'Checkout Date': new Date(checkout.checkoutDate).toLocaleString(),
+
+                'Expected Return': new Date(checkout.expectedReturn).toLocaleString(),
+
+                'Return Date': checkout.returnDate ? new Date(checkout.returnDate).toLocaleString() : '',
+
+                'Mileage Out': checkout.mileageOut || '',
+
+                'Mileage In': checkout.mileageIn || '',
+
+                'Miles Driven': checkout.milesDriven || '',
+
+                'Fuel Level (%)': checkout.fuelLevel || '',
+
+                'Condition Notes': checkout.conditionNotes || ''
+
+            }));
+
+ 
+
+            const ws = XLSX.utils.json_to_sheet(checkoutData);
+
+           
+
+            // Set column widths
+
+            ws['!cols'] = [
+
+                {wch: 12}, {wch: 20}, {wch: 15}, {wch: 25}, {wch: 20},
+
+                {wch: 20}, {wch: 20}, {wch: 12}, {wch: 12}, {wch: 12},
+
+                {wch: 12}, {wch: 30}
+
+            ];
+
+ 
+
+            XLSX.utils.book_append_sheet(wb, ws, 'Checkout History');
+
+        }
+
+ 
+
+        // Add Maintenance sheet to workbook
+
+        function addMaintenanceSheet(wb) {
+
+            const maintenanceData = maintenanceHistory.map(maintenance => {
+
+                const vehicle = vehicles.find(v => v.id === maintenance.vehicleId);
+
+                return {
+
+                    'Vehicle ID': maintenance.vehicleId,
+
+                    'Vehicle Info': vehicle ? `${vehicle.make} ${vehicle.model}` : 'Unknown',
+
+                    'Maintenance Type': maintenance.type,
+
+                    'Description': maintenance.description,
+
+                    'Scheduled Date': new Date(maintenance.scheduledDate).toLocaleDateString(),
+
+                    'Status': maintenance.status,
+
+                    'Created Date': new Date(maintenance.createdDate).toLocaleString(),
+
+                    'Completed Date': maintenance.completedDate ? new Date(maintenance.completedDate).toLocaleString() : ''
+
+                };
+
+            });
+
+ 
+
+            const ws = XLSX.utils.json_to_sheet(maintenanceData);
+
+           
+
+            // Set column widths
+
+            ws['!cols'] = [
+
+                {wch: 12}, {wch: 20}, {wch: 15}, {wch: 30}, {wch: 15},
+
+                {wch: 12}, {wch: 20}, {wch: 20}
+
+            ];
+
+ 
+
+            XLSX.utils.book_append_sheet(wb, ws, 'Maintenance');
+
+        }
+
+ 
+
+        // Add Utilization sheet to workbook
+
+        function addUtilizationSheet(wb) {
+
+            const utilizationData = vehicles.map(vehicle => {
+
+                const vehicleCheckouts = checkoutHistory.filter(c => c.vehicleId === vehicle.id);
+
+                const totalMiles = vehicleCheckouts.reduce((sum, c) => sum + (c.milesDriven || 0), 0);
+
+                const avgMiles = vehicleCheckouts.length > 0 ? (totalMiles / vehicleCheckouts.length).toFixed(1) : 0;
+
+               
+
+                return {
+
+                    'Vehicle ID': vehicle.id,
+
+                    'Vehicle Info': `${vehicle.make} ${vehicle.model} `,
+
+                    'Total Checkouts': vehicleCheckouts.length,
+
+                    'Total Miles Driven': totalMiles,
+
+                    'Average Miles Per Trip': parseFloat(avgMiles),
+
+                    'Current Mileage': vehicle.mileage,
+
+                    'Current Status': vehicle.status
+
+                };
+
+            });
+
+ 
+
+            const ws = XLSX.utils.json_to_sheet(utilizationData);
+
+           
+
+            // Set column widths
+
+            ws['!cols'] = [
+
+                {wch: 12}, {wch: 25}, {wch: 15}, {wch: 18}, {wch: 20},
+
+                {wch: 15}, {wch: 15}
+
+            ];
+
+ 
+
+            XLSX.utils.book_append_sheet(wb, ws, 'Utilization Report');
+
+        }
+
+ 
+
+        // Add all sheets to workbook
+
+        function addAllSheets(wb) {
+
+            addVehicleSheet(wb);
+
+            addCheckoutHistorySheet(wb);
+
+            addMaintenanceSheet(wb);
+
+            addUtilizationSheet(wb);
+
+           
+
+            // Add summary sheet
+
+            const summaryData = [
+
+                ['Report Generated', new Date().toLocaleString()],
+
+                ['Total Vehicles', vehicles.length],
+
+                ['Available Vehicles', vehicles.filter(v => v.status === 'available').length],
+
+                ['Checked Out Vehicles', vehicles.filter(v => v.status === 'checked-out').length],
+
+                ['Vehicles in Maintenance', vehicles.filter(v => v.status === 'maintenance').length],
+
+                ['Total Checkouts', checkoutHistory.length],
+
+                ['Active Checkouts', checkoutHistory.filter(c => !c.returnDate).length],
+
+                ['Scheduled Maintenance Items', maintenanceHistory.filter(m => m.status === 'scheduled').length],
+
+                ['Completed Maintenance Items', maintenanceHistory.filter(m => m.status === 'completed').length]
+
+            ];
+
+ 
+
+            const summaryWs = XLSX.utils.aoa_to_sheet(summaryData);
+
+            summaryWs['!cols'] = [{wch: 25}, {wch: 20}];
+
+            XLSX.utils.book_append_sheet(wb, summaryWs, 'Summary');
+
+        }
+
+ 
+
+        // Generate QR Code
+
+        function generateQRCode() {
+
+            const vehicleId = document.getElementById('qr-vehicle').value;
+
+            if (!vehicleId) {
+
+                alert('Please select a vehicle first.');
+
+                return;
+
+            }
+
+           
+
+            const vehicle = vehicles.find(v => v.id === vehicleId);
+
+            if (!vehicle) return;
+
+           
+
+            // Create QR code data - in production, this would be a URL to your system
+
+            const qrData = `${window.location.origin}${window.location.pathname}?vehicle=${vehicleId}&action=quick-access`;
+
+           
+
+            // Generate QR code using a simple text-based representation
+
+            // In production, you'd use a proper QR code library
+
+            const qrDisplay = document.getElementById('qr-display');
+
+            const qrContainer = document.getElementById('qr-code-container');
+
+           
+
+            qrContainer.innerHTML = `
+
+                <div class="qr-code">
+
+                    <div style="font-family: monospace; font-size: 8px; line-height: 8px; background: white; padding: 10px; border: 2px solid #333;">
+
+                      
+
+                    </div>
+
+                    <p style="margin-top: 10px; font-size: 12px;"><strong>Vehicle:</strong> ${vehicle.id}</p>
+
+                    <p style="font-size: 10px; color: #666; word-break: break-all;">${qrData}</p>
+
+                </div>
+
+            `;
+
+           
+
+            qrDisplay.style.display = 'block';
+
+        }
+
+ 
+
+        // Show alert messages
+
+        function showAlert(containerId, type, message) {
+
+            const container = document.getElementById(containerId);
+
+            container.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+
+           
+
+            // Auto-hide after 5 seconds
+
+            setTimeout(() => {
+
+                container.innerHTML = '';
+
+            }, 5000);
+
+        }
+
+ 
+
+        // Handle URL parameters for QR code quick access
+
+        function handleURLParams() {
+
+            const urlParams = new URLSearchParams(window.location.search);
+
+            const vehicleId = urlParams.get('vehicle');
+
+            const action = urlParams.get('action');
+
+           
+
+            if (vehicleId && action === 'quick-access') {
+
+                const vehicle = vehicles.find(v => v.id === vehicleId);
+
+                if (vehicle) {
+
+                    // Pre-select the vehicle based on its status
+
+                    if (vehicle.status === 'available') {
+
+                        showTab('checkout');
+
+                        document.getElementById('checkout-vehicle').value = vehicleId;
+
+                    } else if (vehicle.status === 'checked-out') {
+
+                        showTab('return');
+
+                        document.getElementById('return-vehicle').value = vehicleId;
+
+                    }
+
+                   
+
+                    // Show alert about QR code access
+
+                    setTimeout(() => {
+
+                        const alertContainer = vehicle.status === 'available' ? 'checkout-alert' : 'return-alert';
+
+                        showAlert(alertContainer, 'success', `QR Code Access: Vehicle ${vehicleId} pre-selected`);
+
+                    }, 500);
+
+                }
+
+            }
+
+        }
+
+ 
+
+        // Advanced features
+
+ 
+
+        // Overdue vehicle checker
+
+        function checkOverdueVehicles() {
+
+            const now = new Date();
+
+            const overdueVehicles = vehicles.filter(vehicle => {
+
+                if (vehicle.status === 'checked-out' && vehicle.expectedReturn) {
+
+                    const expectedDate = new Date(vehicle.expectedReturn);
+
+                    return now > expectedDate;
+
+                }
+
+                return false;
+
+            });
+
+           
+
+            if (overdueVehicles.length > 0) {
+
+                console.log('Overdue vehicles detected:', overdueVehicles);
+
+                // In production, this could send notifications
+
+            }
+
+           
+
+            return overdueVehicles;
+
+        }
+
+ 
+
+        // Maintenance reminder system
+
+        function checkMaintenanceDue() {
+
+            const highMileageVehicles = vehicles.filter(v => {
+
+                // Check if vehicle needs maintenance based on mileage (every 15,000 miles)
+
+                const lastMaintenance = maintenanceHistory
+
+                    .filter(m => m.vehicleId === v.id && m.status === 'completed')
+
+                    .sort((a, b) => new Date(b.completedDate) - new Date(a.completedDate))[0];
+
+               
+
+                if (!lastMaintenance) {
+
+                    return v.mileage > 15000; // First maintenance
+
+                }
+
+               
+
+                // Calculate miles since last maintenance (simplified)
+
+                return v.mileage > 15000; // This would need proper calculation in production
+
+            });
+
+           
+
+            return highMileageVehicles;
+
+        }
+
+ 
+
+        // Fuel efficiency calculator
+
+        function calculateFuelEfficiency() {
+
+            const efficiencyData = vehicles.map(vehicle => {
+
+                const vehicleTrips = checkoutHistory.filter(c => c.vehicleId === vehicle.id && c.milesDriven);
+
+                const totalMiles = vehicleTrips.reduce((sum, trip) => sum + trip.milesDriven, 0);
+
+                const tripCount = vehicleTrips.length;
+
+               
+
+                return {
+
+                    vehicleId: vehicle.id,
+
+                    vehicle: `${vehicle.make} ${vehicle.model}`,
+
+                    totalMiles: totalMiles,
+
+                    tripCount: tripCount,
+
+                    avgMilesPerTrip: tripCount > 0 ? (totalMiles / tripCount).toFixed(1) : 0
+
+                };
+
+            });
+
+           
+
+            return efficiencyData;
+
+        }
+
+ 
+
+        // Generate efficiency report
+
+        function generateEfficiencyReport() {
+
+            const reportsContent = document.getElementById('reports-content');
+
+            const efficiencyData = calculateFuelEfficiency();
+
+           
+
+            let report = '<h3>Vehicle Efficiency Report</h3>';
+
+            report += '<table class="report-table">';
+
+            report += '<tr><th>Vehicle</th><th>Total Miles</th><th>Total Trips</th><th>Avg Miles/Trip</th></tr>';
+
+           
+
+            efficiencyData.forEach(data => {
+
+                report += `<tr>
+
+                    <td>${data.vehicle}</td>
+
+                    <td>${data.totalMiles.toLocaleString()}</td>
+
+                    <td>${data.tripCount}</td>
+
+                    <td>${data.avgMilesPerTrip}</td>
+
+                </tr>`;
+
+            });
+
+           
+
+            report += '</table>';
+
+           
+
+            // Add overdue vehicles section
+
+            const overdueVehicles = checkOverdueVehicles();
+
+            if (overdueVehicles.length > 0) {
+
+                report += '<h3 style="color: #ff6b6b; margin-top: 30px;">⚠️ Overdue Vehicles</h3>';
+
+                report += '<table class="report-table">';
+
+                report += '<tr><th>Vehicle</th><th>Checked Out By</th><th>Expected Return</th><th>Days Overdue</th></tr>';
+
+               
+
+                overdueVehicles.forEach(vehicle => {
+
+                    const expectedDate = new Date(vehicle.expectedReturn);
+
+                    const now = new Date();
+
+                    const daysOverdue = Math.ceil((now - expectedDate) / (1000 * 60 * 60 * 24));
+
+                   
+
+                    report += `<tr style="background-color: #ffebee;">
+
+                        <td>${vehicle.id} - ${vehicle.make} ${vehicle.model}</td>
+
+                        <td>${vehicle.checkedOutBy}</td>
+
+                        <td>${expectedDate.toLocaleDateString()}</td>
+
+                        <td>${daysOverdue} days</td>
+
+                    </tr>`;
+
+                });
+
+               
+
+                report += '</table>';
+
+            }
+
+           
+
+            reportsContent.innerHTML = report;
+
+        }
+
+ 
+
+        // Add efficiency report button
+
+        function addEfficiencyReportButton() {
+
+            const reportsTab = document.querySelector('#reports div:first-child');
+
+            const efficiencyBtn = document.createElement('button');
+
+            efficiencyBtn.className = 'btn';
+
+            efficiencyBtn.textContent = 'Efficiency Report';
+
+            efficiencyBtn.onclick = generateEfficiencyReport;
+
+            reportsTab.appendChild(efficiencyBtn);
+
+        }
+
+ 
+
+        // Search and filter functionality
+
+        function addSearchFilter() {
+
+            const dashboardTab = document.getElementById('dashboard');
+
+            const searchDiv = document.createElement('div');
+
+            searchDiv.style.marginBottom = '20px';
+
+            searchDiv.innerHTML = `
+
+                <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+
+                    <div>
+
+                        <input type="text" id="vehicle-search" placeholder="Search vehicles..."
+
+                               style="padding: 10px; border: 2px solid #e1e1e1; border-radius: 8px; width: 200px;">
+
+                    </div>
+
+                    <div>
+
+                        <select id="status-filter" style="padding: 10px; border: 2px solid #e1e1e1; border-radius: 8px;">
+
+                            <option value="">All Status</option>
+
+                            <option value="available">Available</option>
+
+                            <option value="checked-out">Checked Out</option>
+
+                            <option value="maintenance">Maintenance</option>
+
+                        </select>
+
+                    </div>
+
+                    <button class="btn" onclick="filterVehicles()">Filter</button>
+
+                    <button class="btn" onclick="clearFilters()">Clear</button>
+
+                </div>
+
+            `;
+
+           
+
+            // Insert after the fleet stats
+
+            const fleetStats = document.getElementById('fleet-stats');
+
+            fleetStats.parentNode.insertBefore(searchDiv, fleetStats.nextSibling);
+
+        }
+
+ 
+
+        // Filter vehicles function
+
+        function filterVehicles() {
+
+            const searchTerm = document.getElementById('vehicle-search').value.toLowerCase();
+
+            const statusFilter = document.getElementById('status-filter').value;
+
+           
+
+            let filteredVehicles = vehicles;
+
+           
+
+            if (searchTerm) {
+
+                filteredVehicles = filteredVehicles.filter(vehicle =>
+
+                    vehicle.id.toLowerCase().includes(searchTerm) ||
+
+                    vehicle.make.toLowerCase().includes(searchTerm) ||
+
+                    vehicle.model.toLowerCase().includes(searchTerm) ||
+
+                    vehicle.licensePlate.toLowerCase().includes(searchTerm)
+
+                );
+
+            }
+
+           
+
+            if (statusFilter) {
+
+                filteredVehicles = filteredVehicles.filter(vehicle => vehicle.status === statusFilter);
+
+            }
+
+           
+
+            // Update dashboard with filtered results
+
+            const dashboard = document.getElementById('vehicle-dashboard');
+
+            dashboard.innerHTML = '';
+
+           
+
+            if (filteredVehicles.length === 0) {
+
+                dashboard.innerHTML = '<p style="text-align: center; color: #666; font-style: italic;">No vehicles match your search criteria.</p>';
+
+            } else {
+
+                filteredVehicles.forEach(vehicle => {
+
+                    const card = createVehicleCard(vehicle);
+
+                    dashboard.appendChild(card);
+
+                });
+
+            }
+
+        }
+
+ 
+
+        // Clear filters function
+
+        function clearFilters() {
+
+            document.getElementById('vehicle-search').value = '';
+
+            document.getElementById('status-filter').value = '';
+
+            updateDashboard();
+
+        }
+
+ 
+
+        // Initialize application when page loads
+
+        document.addEventListener('DOMContentLoaded', function() {
+
+            init();
+
+            handleURLParams();
+
+            addEfficiencyReportButton();
+
+            addSearchFilter();
+
+           
+
+            // Set up periodic checks (every 5 minutes)
+
+            setInterval(() => {
+
+                checkOverdueVehicles();
+
+                checkMaintenanceDue();
+
+            }, 300000);
+
+           
+
+            // Set default expected return date to tomorrow
+
+            const tomorrow = new Date();
+
+            tomorrow.setDate(tomorrow.getDate() + 1);
+
+            tomorrow.setHours(17, 0); // 5 PM tomorrow
+
+            document.getElementById('expected-return').value = tomorrow.toISOString().slice(0, 16);
+
+           
+
+            // Set default maintenance date to next week
+
+            const nextWeek = new Date();
+
+            nextWeek.setDate(nextWeek.getDate() + 7);
+
+            document.getElementById('maintenance-date').value = nextWeek.toISOString().slice(0, 10);
+
+        });
+
+ 
+
+        // Add keyboard shortcuts
+
+        document.addEventListener('keydown', function(e) {
+
+            // Ctrl/Cmd + number keys for tab switching
+
+            if ((e.ctrlKey || e.metaKey) && e.key >= '1' && e.key <= '6') {
+
+                e.preventDefault();
+
+                const tabs = ['dashboard', 'checkout', 'return', 'maintenance', 'reports', 'qr-codes'];
+
+                const tabIndex = parseInt(e.key) - 1;
+
+                if (tabs[tabIndex]) {
+
+                    showTab(tabs[tabIndex]);
+
+                    // Manually trigger the tab appearance update
+
+                    document.querySelectorAll('.nav-tab').forEach((tab, index) => {
+
+                        tab.classList.toggle('active', index === tabIndex);
+
+                    });
+
+                }
+
+            }
+
+        });
+
+ 
+
+        // Mobile-responsive improvements
+
+        function checkMobile() {
+
+            const isMobile = window.innerWidth <= 768;
+
+            const container = document.querySelector('.container');
+
+           
+
+            if (isMobile) {
+
+                container.style.padding = '10px';
+
+                // Make forms more mobile-friendly
+
+                document.querySelectorAll('.form-group input, .form-group select, .form-group textarea').forEach(input => {
+
+                    input.style.fontSize = '16px'; // Prevents zoom on iOS
+
+                });
+
+            }
+
+        }
+
+ 
+
+        // Check mobile on load and resize
+
+        window.addEventListener('load', checkMobile);
+
+        window.addEventListener('resize', checkMobile);
+
+ 
+
+    </script>
+
+</body>
+
+</html>
+
+ 
+
+ 
